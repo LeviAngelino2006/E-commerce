@@ -69,6 +69,25 @@ export const brand = {
     freeOver: 80000, // umbral envío gratis (mock)
     note: 'Envío gratis en compras superiores a $80.000.',
   },
+
+  // --- Trust badges (footer) ---
+  // RE-SKIN: adaptá textos para la marca del cliente.
+  trustBadges: [
+    { icon: 'truck', text: 'Envíos a todo el país' },
+    { icon: 'refresh', text: 'Cambios sin cargo' },
+    { icon: 'shield', text: 'Compra protegida' },
+  ],
+
+  // --- Roadmap real (panel de demo) ---
+  // RE-SKIN: editá la lista para cada pitch de cliente.
+  roadmapReal: [
+    'Checkout con Mercado Pago',
+    'Panel de administración de productos',
+    'Gestión de stock en tiempo real',
+    'Métricas de ventas y reportes',
+    'Sistema de descuentos y cupones',
+    'Emails transaccionales automáticos',
+  ],
 }
 
 /** Formatea un precio según la moneda configurada. */

@@ -7,8 +7,9 @@ import Seo from '../components/Seo.jsx'
 import Button from '../components/ui/Button.jsx'
 import ProductGrid from '../components/ProductGrid.jsx'
 import ProductImage from '../components/ProductImage.jsx'
-import { getFeatured, getNew } from '../lib/catalog.js'
+import { getFeatured, getNew, products } from '../lib/catalog.js'
 import { brand } from '../config/brand.js'
+import { useWishlistStore } from '../store/wishlistStore.js'
 
 // RE-SKIN: imagen editorial del hero. Reemplazar por foto de campaña del cliente.
 const HERO_IMG =
@@ -33,6 +34,10 @@ function SectionHeader({ title, to, linkLabel = 'Ver todo' }) {
 export default function Home() {
   const nuevos = getNew().slice(0, 4)
   const destacados = getFeatured().slice(0, 4)
+  const historyIds = useWishlistStore((s) => s.history)
+  const recentProducts = historyIds
+    .map((id) => products.find((p) => p.id === id))
+    .filter(Boolean)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
 
@@ -124,6 +129,14 @@ export default function Home() {
         <SectionHeader title="Destacados" to="/tienda" />
         <ProductGrid products={destacados} />
       </section>
+
+      {/* ---------- VISTOS RECIENTEMENTE ---------- */}
+      {recentProducts.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <SectionHeader title="Vistos recientemente" />
+          <ProductGrid products={recentProducts} />
+        </section>
+      )}
 
       {/* ---------- NEWSLETTER ---------- */}
       <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6 lg:px-8">

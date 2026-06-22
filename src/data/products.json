@@ -45,7 +45,8 @@
     ],
     "descripcion": "Punto acanalado de media estación. Ajuste cómodo, puños elastizados. Capa base ideal.",
     "destacado": false,
-    "nuevo": false
+    "nuevo": false,
+    "stock": 2
   },
   {
     "id": "rem-004",
@@ -125,7 +126,8 @@
     ],
     "descripcion": "Nylon ripstop con interior acolchado liviano. Puños elastizados y cierre impermeable. Urbana y funcional.",
     "destacado": true,
-    "nuevo": true
+    "nuevo": true,
+    "stock": 1
   },
   {
     "id": "cam-002",
@@ -221,7 +223,8 @@
     ],
     "descripcion": "Denim elastizado de tacto suave. Calce slim sin apretar. Lavado parejo y duradero.",
     "destacado": false,
-    "nuevo": false
+    "nuevo": false,
+    "stock": 2
   },
   {
     "id": "acc-001",
@@ -253,7 +256,8 @@
     ],
     "descripcion": "Gorro de punto fino con doblez. Lana acrílica suave que no pica. Abriga sin abultar.",
     "destacado": false,
-    "nuevo": false
+    "nuevo": false,
+    "stock": 3
   },
   {
     "id": "acc-003",

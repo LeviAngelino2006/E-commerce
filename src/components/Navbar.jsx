@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Logo from './Logo.jsx'
-import { BagIcon, MenuIcon, CloseIcon } from './icons.jsx'
+import { BagIcon, MenuIcon, CloseIcon, HeartIcon } from './icons.jsx'
 import { useCartStore } from '../store/cartStore.js'
 import { useUiStore } from '../store/uiStore.js'
+import { useWishlistStore } from '../store/wishlistStore.js'
 import { brand } from '../config/brand.js'
 
 const NAV = [
@@ -19,6 +20,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const openCart = useUiStore((s) => s.openCart)
   const itemCount = useCartStore((s) => s.items.reduce((n, i) => n + i.qty, 0))
+  const favCount = useWishlistStore((s) => s.items.length)
 
   return (
     <header className="border-b border-line bg-bg/80 backdrop-blur">
@@ -55,8 +57,20 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Carrito */}
-        <div className="flex flex-1 items-center justify-end md:flex-none">
+        {/* Favoritos + Carrito */}
+        <div className="flex flex-1 items-center justify-end gap-1 md:flex-none">
+          <Link
+            to="/favoritos"
+            aria-label={`Ver favoritos (${favCount})`}
+            className="relative p-1"
+          >
+            <HeartIcon />
+            {favCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-ink px-1 text-[10px] font-semibold text-bg">
+                {favCount}
+              </span>
+            )}
+          </Link>
           <button
             type="button"
             onClick={openCart}
@@ -108,6 +122,13 @@ export default function Navbar() {
                   className="border-b border-line py-3 text-sm font-medium uppercase tracking-wide"
                 >
                   Tienda
+                </Link>
+                <Link
+                  to="/favoritos"
+                  onClick={() => setMobileOpen(false)}
+                  className="border-b border-line py-3 text-sm font-medium uppercase tracking-wide"
+                >
+                  Favoritos
                 </Link>
                 {brand.categories.map((c) => (
                   <Link

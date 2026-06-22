@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
@@ -11,11 +11,12 @@ import Accordion from '../components/Accordion.jsx'
 import ProductGrid from '../components/ProductGrid.jsx'
 import Button from '../components/ui/Button.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
-import { CheckIcon } from '../components/icons.jsx'
+import { CheckIcon, HeartIcon } from '../components/icons.jsx'
 
 import { getProductById, getRelated } from '../lib/catalog.js'
 import { useCartStore } from '../store/cartStore.js'
 import { useUiStore } from '../store/uiStore.js'
+import { useWishlistStore } from '../store/wishlistStore.js'
 import { formatPrice, brand } from '../config/brand.js'
 
 export default function Product() {
@@ -24,6 +25,17 @@ export default function Product() {
 
   const addItem = useCartStore((s) => s.addItem)
   const addToast = useUiStore((s) => s.addToast)
+  const favItems = useWishlistStore((s) => s.items)
+  const toggleFavorite = useWishlistStore((s) => s.toggleFavorite)
+  const addToHistory = useWishlistStore((s) => s.addToHistory)
+
+  const isFavorite = favItems.includes(product?.id ?? '')
+
+  // Registrar visita en historial
+  useEffect(() => {
+    if (product?.id) addToHistory(product.id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id])
 
   const [activeImg, setActiveImg] = useState(0)
   const [talle, setTalle] = useState(null)
@@ -119,9 +131,29 @@ export default function Product() {
             <p className="text-xs uppercase tracking-widest text-gray">
               {product.categoria}
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight">
-              {product.nombre}
-            </h1>
+            <div className="mt-2 flex items-start gap-3">
+              <h1 className="flex-1 text-3xl font-bold tracking-tight">
+                {product.nombre}
+              </h1>
+              <button
+                type="button"
+                onClick={() => toggleFavorite(product.id)}
+                aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                className="mt-1 shrink-0"
+              >
+                <motion.div
+                  animate={{ scale: isFavorite ? [1, 1.3, 1] : 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <HeartIcon
+                    width={24}
+                    height={24}
+                    fill={isFavorite ? '#ef4444' : 'none'}
+                    stroke={isFavorite ? '#ef4444' : 'currentColor'}
+                  />
+                </motion.div>
+              </button>
+            </div>
 
             <div className="mt-4 flex items-center gap-3">
               <span className="text-2xl font-semibold">

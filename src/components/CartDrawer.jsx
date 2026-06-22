@@ -74,6 +74,35 @@ export default function CartDrawer() {
               </button>
             </div>
 
+            {/* Barra de envío gratis */}
+            {items.length > 0 && (
+              <div className="border-b border-line px-5 py-3">
+                {subtotal >= brand.shipping.freeOver ? (
+                  <p className="text-xs font-medium text-ink">
+                    🎉 ¡Tenés envío gratis!
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray">
+                      Te faltan{' '}
+                      <strong className="font-semibold text-ink">
+                        {formatPrice(brand.shipping.freeOver - subtotal)}
+                      </strong>{' '}
+                      para envío gratis
+                    </p>
+                    <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-line">
+                      <div
+                        className="h-full rounded-full bg-ink transition-all duration-500"
+                        style={{
+                          width: `${Math.min((subtotal / brand.shipping.freeOver) * 100, 100)}%`,
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
             {/* Items */}
             {items.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
@@ -129,17 +158,12 @@ export default function CartDrawer() {
 
                 {/* Footer / subtotal */}
                 <div className="border-t border-line px-5 py-5">
-                  <div className="mb-1 flex items-center justify-between">
+                  <div className="mb-4 flex items-center justify-between">
                     <span className="text-sm text-gray">Subtotal</span>
                     <span className="text-lg font-semibold">
                       {formatPrice(subtotal)}
                     </span>
                   </div>
-                  <p className="mb-4 text-xs text-gray">
-                    {subtotal >= brand.shipping.freeOver
-                      ? '¡Tu pedido tiene envío gratis!'
-                      : brand.shipping.note}
-                  </p>
                   <Button full onClick={goCheckout}>
                     Iniciar compra
                   </Button>

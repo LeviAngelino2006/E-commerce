@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 
 import Navbar from './components/Navbar.jsx'
 import DemoBanner from './components/DemoBanner.jsx'
+import DemoPanel from './components/DemoPanel.jsx'
 import Footer from './components/Footer.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
@@ -13,6 +14,7 @@ import Catalog from './pages/Catalog.jsx'
 import Product from './pages/Product.jsx'
 import Checkout from './pages/Checkout.jsx'
 import Confirmation from './pages/Confirmation.jsx'
+import Favorites from './pages/Favorites.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
@@ -28,6 +30,7 @@ export default function App() {
       </div>
       <CartDrawer />
       <ToastStack />
+      <DemoPanel />
 
       <div className="flex-1">
         {/* key por pathname -> transición entre páginas */}
@@ -38,6 +41,7 @@ export default function App() {
             <Route path="/producto/:id" element={<Product />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/confirmacion" element={<Confirmation />} />
+            <Route path="/favoritos" element={<Favorites />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
