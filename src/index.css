@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   TEMA DE MARCA (Tailwind 4 — tokens @theme)
+   RE-SKIN: cambiá estos tokens junto con src/config/brand.js.
+   Cada token genera utilidades: bg-bg, text-ink, border-line, text-accent, etc.
+   ========================================================================== */
+@theme {
+  --color-bg: #fafafa;
+  --color-ink: #0a0a0a;
+  --color-gray: #6b6b6b;
+  --color-line: #e5e5e5;
+  --color-accent: #2563eb;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ---- Base ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Títulos con la display por defecto */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Estados de foco visibles y consistentes (accesibilidad) */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-gray); }
+
+/* Utilidad: ocultar scroll en tiras horizontales */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
