@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 import PageTransition from '../components/PageTransition.jsx'
@@ -10,6 +10,7 @@ import ColorSelector from '../components/ColorSelector.jsx'
 import Accordion from '../components/Accordion.jsx'
 import ProductGrid from '../components/ProductGrid.jsx'
 import Button from '../components/ui/Button.jsx'
+import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { CheckIcon } from '../components/icons.jsx'
 
 import { getProductById, getRelated } from '../lib/catalog.js'
@@ -22,7 +23,7 @@ export default function Product() {
   const product = getProductById(id)
 
   const addItem = useCartStore((s) => s.addItem)
-  const openCart = useUiStore((s) => s.openCart)
+  const addToast = useUiStore((s) => s.addToast)
 
   const [activeImg, setActiveImg] = useState(0)
   const [talle, setTalle] = useState(null)
@@ -49,11 +50,11 @@ export default function Product() {
 
   const handleAdd = () => {
     if (!talle) {
-      setError(true) // talle obligatorio
+      setError(true)
       return
     }
     addItem(product, { talle, color, qty: 1 })
-    openCart()
+    addToast(`Agregado: ${product.nombre}`)
   }
 
   return (
@@ -64,19 +65,17 @@ export default function Product() {
       />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 text-xs uppercase tracking-widest text-gray">
-          <Link to="/tienda" className="hover:text-ink">
-            Tienda
-          </Link>
-          <span className="px-2">/</span>
-          <Link
-            to={`/tienda?categoria=${encodeURIComponent(product.categoria)}`}
-            className="hover:text-ink"
-          >
-            {product.categoria}
-          </Link>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { label: 'Inicio', to: '/' },
+            { label: 'Tienda', to: '/tienda' },
+            {
+              label: product.categoria,
+              to: `/tienda?categoria=${encodeURIComponent(product.categoria)}`,
+            },
+            { label: product.nombre },
+          ]}
+        />
 
         <div className="grid gap-10 lg:grid-cols-2">
           {/* ---------- Galería ---------- */}

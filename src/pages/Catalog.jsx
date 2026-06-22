@@ -6,6 +6,7 @@ import PageTransition from '../components/PageTransition.jsx'
 import Seo from '../components/Seo.jsx'
 import ProductGrid from '../components/ProductGrid.jsx'
 import FilterPanel from '../components/FilterPanel.jsx'
+import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { CloseIcon, FilterIcon } from '../components/icons.jsx'
 import {
   products,
@@ -92,6 +93,20 @@ export default function Catalog() {
       />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        {/* Breadcrumbs */}
+        {(() => {
+          const activeCategory =
+            filters.categorias.length === 1 ? filters.categorias[0] : null
+          const items = [
+            { label: 'Inicio', to: '/' },
+            activeCategory
+              ? { label: 'Tienda', to: '/tienda' }
+              : { label: 'Tienda' },
+            ...(activeCategory ? [{ label: activeCategory }] : []),
+          ]
+          return <Breadcrumbs items={items} />
+        })()}
+
         {/* Encabezado */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Tienda</h1>
@@ -144,7 +159,43 @@ export default function Catalog() {
               </label>
             </div>
 
-            <ProductGrid products={filtered} />
+            {filtered.length === 0 ? (
+              <div className="flex min-h-[40vh] flex-col items-center justify-center gap-6 py-16 text-center">
+                <svg
+                  width="56"
+                  height="56"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  className="text-line"
+                  aria-hidden
+                >
+                  <path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 01-8 0" />
+                  <line x1="9.5" y1="14.5" x2="14.5" y2="19.5" strokeLinecap="round" />
+                  <line x1="14.5" y1="14.5" x2="9.5" y2="19.5" strokeLinecap="round" />
+                </svg>
+                <div>
+                  <p className="text-base font-semibold tracking-tight">
+                    No encontramos productos con esos filtros.
+                  </p>
+                  <p className="mt-1 text-sm text-gray">
+                    Probá con otras combinaciones o limpiá los filtros.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="border border-ink px-6 py-2.5 text-xs font-semibold uppercase tracking-widest transition-colors hover:bg-ink hover:text-bg"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            ) : (
+              <ProductGrid products={filtered} />
+            )}
           </div>
         </div>
       </div>

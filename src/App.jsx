@@ -6,6 +6,7 @@ import DemoBanner from './components/DemoBanner.jsx'
 import Footer from './components/Footer.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import ToastStack from './components/ToastStack.jsx'
 
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
@@ -26,6 +27,7 @@ export default function App() {
         <Navbar />
       </div>
       <CartDrawer />
+      <ToastStack />
 
       <div className="flex-1">
         {/* key por pathname -> transición entre páginas */}
