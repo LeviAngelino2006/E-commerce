@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Logo from './Logo.jsx'
@@ -6,6 +6,7 @@ import { BagIcon, MenuIcon, CloseIcon, HeartIcon } from './icons.jsx'
 import { useCartStore } from '../store/cartStore.js'
 import { useUiStore } from '../store/uiStore.js'
 import { useWishlistStore } from '../store/wishlistStore.js'
+import { useAuthStore, isAuthenticated } from '../store/authStore.js'
 import { brand } from '../config/brand.js'
 
 const NAV = [
@@ -18,9 +19,31 @@ const NAV = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef(null)
+
   const openCart = useUiStore((s) => s.openCart)
+  const openAuthModal = useUiStore((s) => s.openAuthModal)
   const itemCount = useCartStore((s) => s.items.reduce((n, i) => n + i.qty, 0))
   const favCount = useWishlistStore((s) => s.items.length)
+
+  const loggedIn = useAuthStore(isAuthenticated)
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
+  const addToast = useUiStore((s) => s.addToast)
+
+  function handleLogout() {
+    setUserMenuOpen(false)
+    logout()
+    addToast('Hasta pronto')
+  }
+
+  // Cierre del menú de usuario al hacer click fuera
+  function handleUserBtnBlur(e) {
+    if (!userMenuRef.current?.contains(e.relatedTarget)) {
+      setUserMenuOpen(false)
+    }
+  }
 
   return (
     <header className="border-b border-line bg-bg/80 backdrop-blur">
@@ -57,8 +80,62 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Favoritos + Carrito */}
+        {/* Acciones: usuario, favoritos, carrito */}
         <div className="flex flex-1 items-center justify-end gap-1 md:flex-none">
+          {/* Sesión */}
+          {loggedIn ? (
+            <div ref={userMenuRef} className="relative" onBlur={handleUserBtnBlur}>
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                aria-haspopup="true"
+                aria-expanded={userMenuOpen}
+                className="hidden items-center gap-1.5 px-2 py-1 text-xs uppercase tracking-widest text-gray transition-colors hover:text-ink md:flex"
+              >
+                <span>Hola, {user?.nombre?.split(' ')[0]}</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden>
+                  <path d="M5 7L1 3h8z" />
+                </svg>
+              </button>
+
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-1 min-w-[140px] border border-line bg-bg shadow-md"
+                  >
+                    <Link
+                      to="/mis-pedidos"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block w-full px-4 py-3 text-left text-xs uppercase tracking-widest text-gray transition-colors hover:text-ink"
+                    >
+                      Mis pedidos
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full border-t border-line px-4 py-3 text-left text-xs uppercase tracking-widest text-gray transition-colors hover:text-ink"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={openAuthModal}
+              className="hidden px-2 py-1 text-xs uppercase tracking-widest text-gray transition-colors hover:text-ink md:block"
+            >
+              Iniciar sesión
+            </button>
+          )}
+
+          {/* Favoritos */}
           <Link
             to="/favoritos"
             aria-label={`Ver favoritos (${favCount})`}
@@ -71,6 +148,8 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
+          {/* Carrito */}
           <button
             type="button"
             onClick={openCart}
@@ -140,6 +219,38 @@ export default function Navbar() {
                     {c}
                   </Link>
                 ))}
+                {/* Sesión en mobile */}
+                <div className="mt-4 border-t border-line pt-4">
+                  {loggedIn ? (
+                    <>
+                      <p className="mb-2 text-xs uppercase tracking-widest text-gray">
+                        Hola, {user?.nombre?.split(' ')[0]}
+                      </p>
+                      <Link
+                        to="/mis-pedidos"
+                        onClick={() => setMobileOpen(false)}
+                        className="mb-2 block border-b border-line py-3 text-sm uppercase tracking-wide"
+                      >
+                        Mis pedidos
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => { setMobileOpen(false); handleLogout() }}
+                        className="text-sm uppercase tracking-wide text-gray"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => { setMobileOpen(false); openAuthModal() }}
+                      className="text-sm font-medium uppercase tracking-wide"
+                    >
+                      Iniciar sesión
+                    </button>
+                  )}
+                </div>
               </div>
             </motion.div>
           </>

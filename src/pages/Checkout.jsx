@@ -7,6 +7,7 @@ import ProductImage from '../components/ProductImage.jsx'
 import Button from '../components/ui/Button.jsx'
 import { useCartStore } from '../store/cartStore.js'
 import { formatPrice, brand } from '../config/brand.js'
+import api from '../lib/api.js'
 
 /** Campo de formulario con label + validación de formato. */
 function Field({ label, name, value, onChange, error, ...props }) {
@@ -50,6 +51,8 @@ export default function Checkout() {
 
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const [stockError, setStockError] = useState(null)
 
   // Carrito vacío -> no tiene sentido el checkout.
   if (items.length === 0) {
@@ -85,31 +88,51 @@ export default function Checkout() {
     return e
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const found = validate()
     setErrors(found)
     if (Object.keys(found).length > 0) {
-      // Scroll al primer error
       const first = document.querySelector('[data-error="true"]')
       first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
 
-    // Genera número de orden (mock) y guarda snapshot para la confirmación.
-    const orderNumber =
-      'VRT-' + Math.floor(100000 + Math.random() * 900000).toString()
-    const snapshot = {
-      orderNumber,
-      items,
-      subtotal,
-      shipping,
-      total,
-      email: form.email,
-      nombre: form.nombre,
+    setSubmitting(true)
+    setStockError(null)
+
+    try {
+      const res = await api.post('/api/orders', {
+        items: items.map((i) => ({
+          productId: i.productId,
+          talle: i.talle,
+          color: i.color,
+          cantidad: i.qty,
+        })),
+        envio: {
+          email: form.email,
+          nombre: form.nombre,
+          telefono: form.telefono,
+          direccion: form.direccion,
+          ciudad: form.ciudad,
+          provincia: form.provincia,
+          codigoPostal: form.cp,
+        },
+      })
+      navigate(`/confirmacion/${res.data.id}`)
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setStockError(
+          err.response.data?.message ||
+            'Stock insuficiente para uno o más productos. Revisá tu carrito.',
+        )
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        setStockError('Ocurrió un error al procesar tu pedido. Intentá de nuevo.')
+      }
+    } finally {
+      setSubmitting(false)
     }
-    sessionStorage.setItem('vertice-last-order', JSON.stringify(snapshot))
-    navigate('/confirmacion')
   }
 
   return (
@@ -118,6 +141,12 @@ export default function Checkout() {
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="mb-8 text-3xl font-bold tracking-tight">Finalizar compra</h1>
+
+        {stockError && (
+          <div className="mb-6 border border-accent bg-accent/5 px-4 py-3 text-sm text-accent">
+            {stockError}
+          </div>
+        )}
 
         <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
           {/* ---------- Formulario ---------- */}
@@ -263,8 +292,8 @@ export default function Checkout() {
             </section>
 
             <div className="hidden lg:block">
-              <Button type="submit" size="lg" full>
-                Pagar {formatPrice(total)}
+              <Button type="submit" size="lg" full disabled={submitting}>
+                {submitting ? 'Procesando...' : `Pagar ${formatPrice(total)}`}
               </Button>
             </div>
           </form>
@@ -310,15 +339,16 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* CTA mobile (el form se envía igual por el botón de abajo) */}
+            {/* CTA mobile */}
             <div className="mt-4 lg:hidden">
               <Button
                 type="submit"
                 size="lg"
                 full
+                disabled={submitting}
                 onClick={handleSubmit}
               >
-                Pagar {formatPrice(total)}
+                {submitting ? 'Procesando...' : `Pagar ${formatPrice(total)}`}
               </Button>
             </div>
 

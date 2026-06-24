@@ -9,7 +9,7 @@ import FilterPanel from '../components/FilterPanel.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { CloseIcon, FilterIcon } from '../components/icons.jsx'
 import {
-  products,
+  useCatalogData,
   categories,
   getAllColors,
   getAllSizes,
@@ -23,11 +23,27 @@ const SORTS = [
   { value: 'precio-desc', label: 'Precio: mayor a menor' },
 ]
 
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="animate-pulse space-y-3">
+          <div className="aspect-[3/4] bg-line" />
+          <div className="h-3 w-3/4 rounded bg-line" />
+          <div className="h-3 w-1/2 rounded bg-line" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function Catalog() {
   const [searchParams] = useSearchParams()
-  const bounds = useMemo(() => getPriceBounds(), [])
-  const allColors = useMemo(() => getAllColors(), [])
-  const allSizes = useMemo(() => getAllSizes(), [])
+  const { products, loading, error } = useCatalogData()
+
+  const bounds = useMemo(() => getPriceBounds(products), [products])
+  const allColors = useMemo(() => getAllColors(products), [products])
+  const allSizes = useMemo(() => getAllSizes(products), [products])
 
   const filtersOpen = useUiStore((s) => s.filtersOpen)
   const openFilters = useUiStore((s) => s.openFilters)
@@ -39,9 +55,13 @@ export default function Catalog() {
     categorias: initialCategoria ? [initialCategoria] : [],
     talles: [],
     colores: [],
-    maxPrice: bounds[1],
+    maxPrice: Infinity,
   })
   const [sort, setSort] = useState(searchParams.get('orden') || 'nuevos')
+
+  // Sincroniza maxPrice con los bounds reales cuando llegan del API
+  const effectiveMaxPrice =
+    filters.maxPrice === Infinity ? bounds[1] : filters.maxPrice
 
   // Si cambia el query param (ej: click en categoría del navbar mientras ya
   // estamos en /tienda), re-aplicamos. Patrón de "ajustar estado en render"
@@ -67,7 +87,7 @@ export default function Catalog() {
         return false
       if (filters.colores.length && !p.colores.some((c) => filters.colores.includes(c)))
         return false
-      if (p.precio > filters.maxPrice) return false
+      if (p.precio > effectiveMaxPrice) return false
       return true
     })
 
@@ -83,7 +103,7 @@ export default function Catalog() {
         list = [...list].sort((a, b) => Number(b.nuevo) - Number(a.nuevo))
     }
     return list
-  }, [filters, sort])
+  }, [filters, sort, products, effectiveMaxPrice])
 
   return (
     <PageTransition>
@@ -110,10 +130,12 @@ export default function Catalog() {
         {/* Encabezado */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Tienda</h1>
-          <p className="mt-2 text-sm text-gray">
-            {filtered.length}{' '}
-            {filtered.length === 1 ? 'producto' : 'productos'}
-          </p>
+          {!loading && (
+            <p className="mt-2 text-sm text-gray">
+              {filtered.length}{' '}
+              {filtered.length === 1 ? 'producto' : 'productos'}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-10">
@@ -124,7 +146,7 @@ export default function Catalog() {
               sizes={allSizes}
               colors={allColors}
               bounds={bounds}
-              filters={filters}
+              filters={{ ...filters, maxPrice: effectiveMaxPrice }}
               setFilters={setFilters}
               onClear={clearFilters}
             />
@@ -159,7 +181,22 @@ export default function Catalog() {
               </label>
             </div>
 
-            {filtered.length === 0 ? (
+            {error ? (
+              <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 py-16 text-center">
+                <p className="text-base font-semibold tracking-tight">
+                  No pudimos cargar el catálogo, intentá de nuevo.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="border border-ink px-6 py-2.5 text-xs font-semibold uppercase tracking-widest transition-colors hover:bg-ink hover:text-bg"
+                >
+                  Reintentar
+                </button>
+              </div>
+            ) : loading ? (
+              <GridSkeleton />
+            ) : filtered.length === 0 ? (
               <div className="flex min-h-[40vh] flex-col items-center justify-center gap-6 py-16 text-center">
                 <svg
                   width="56"
@@ -232,7 +269,7 @@ export default function Catalog() {
                   sizes={allSizes}
                   colors={allColors}
                   bounds={bounds}
-                  filters={filters}
+                  filters={{ ...filters, maxPrice: effectiveMaxPrice }}
                   setFilters={setFilters}
                   onClear={clearFilters}
                 />

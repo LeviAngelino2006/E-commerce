@@ -13,7 +13,7 @@ import Button from '../components/ui/Button.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { CheckIcon, HeartIcon } from '../components/icons.jsx'
 
-import { getProductById, getRelated } from '../lib/catalog.js'
+import { useProductData, useCatalogData, getRelated } from '../lib/catalog.js'
 import { useCartStore } from '../store/cartStore.js'
 import { useUiStore } from '../store/uiStore.js'
 import { useWishlistStore } from '../store/wishlistStore.js'
@@ -21,7 +21,8 @@ import { formatPrice, brand } from '../config/brand.js'
 
 export default function Product() {
   const { id } = useParams()
-  const product = getProductById(id)
+  const { product, loading, error } = useProductData(id)
+  const { products: allProducts } = useCatalogData()
 
   const addItem = useCartStore((s) => s.addItem)
   const addToast = useUiStore((s) => s.addToast)
@@ -31,7 +32,6 @@ export default function Product() {
 
   const isFavorite = favItems.includes(product?.id ?? '')
 
-  // Registrar visita en historial
   useEffect(() => {
     if (product?.id) addToHistory(product.id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,16 +39,47 @@ export default function Product() {
 
   const [activeImg, setActiveImg] = useState(0)
   const [talle, setTalle] = useState(null)
-  const [color, setColor] = useState(product?.colores?.[0] ?? null)
-  const [error, setError] = useState(false)
+  const [color, setColor] = useState(null)
+  const [addError, setAddError] = useState(false)
 
-  // Producto inexistente
-  if (!product) {
+  // Set default color once product loads
+  useEffect(() => {
+    if (product?.colores?.length) {
+      setColor(product.colores[0])
+    }
+    setActiveImg(0)
+    setTalle(null)
+    setAddError(false)
+  }, [product?.id])
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <Seo title="Cargando producto..." />
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-2">
+            <div className="animate-pulse aspect-[3/4] bg-line" />
+            <div className="space-y-4 py-4">
+              <div className="h-4 w-1/4 rounded bg-line" />
+              <div className="h-8 w-3/4 rounded bg-line" />
+              <div className="h-6 w-1/4 rounded bg-line" />
+              <div className="mt-6 h-3 w-full rounded bg-line" />
+              <div className="h-3 w-5/6 rounded bg-line" />
+            </div>
+          </div>
+        </div>
+      </PageTransition>
+    )
+  }
+
+  if (error || !product) {
     return (
       <PageTransition>
         <Seo title="Producto no encontrado" />
         <div className="mx-auto flex min-h-[50vh] max-w-7xl flex-col items-center justify-center px-4 text-center">
-          <h1 className="text-2xl font-bold">Producto no encontrado</h1>
+          <h1 className="text-2xl font-bold">
+            {error ? 'No pudimos cargar este producto' : 'Producto no encontrado'}
+          </h1>
           <Button to="/tienda" className="mt-6">
             Volver a la tienda
           </Button>
@@ -58,11 +89,11 @@ export default function Product() {
   }
 
   const onSale = product.precioAnterior && product.precioAnterior > product.precio
-  const related = getRelated(product.id)
+  const related = getRelated(allProducts, product.id)
 
   const handleAdd = () => {
     if (!talle) {
-      setError(true)
+      setAddError(true)
       return
     }
     addItem(product, { talle, color, qty: 1 })
@@ -195,10 +226,10 @@ export default function Product() {
                 value={talle}
                 onChange={(t) => {
                   setTalle(t)
-                  setError(false)
+                  setAddError(false)
                 }}
               />
-              {error && (
+              {addError && (
                 <p className="mt-2 text-xs text-accent">
                   Elegí un talle para continuar.
                 </p>

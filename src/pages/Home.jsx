@@ -7,7 +7,7 @@ import Seo from '../components/Seo.jsx'
 import Button from '../components/ui/Button.jsx'
 import ProductGrid from '../components/ProductGrid.jsx'
 import ProductImage from '../components/ProductImage.jsx'
-import { getFeatured, getNew, products } from '../lib/catalog.js'
+import { useCatalogData, getFeatured, getNew } from '../lib/catalog.js'
 import { brand } from '../config/brand.js'
 import { useWishlistStore } from '../store/wishlistStore.js'
 
@@ -31,19 +31,35 @@ function SectionHeader({ title, to, linkLabel = 'Ver todo' }) {
   )
 }
 
+function GridSkeleton({ count = 4 }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="animate-pulse space-y-3">
+          <div className="aspect-[3/4] bg-line" />
+          <div className="h-3 w-3/4 rounded bg-line" />
+          <div className="h-3 w-1/2 rounded bg-line" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function Home() {
-  const nuevos = getNew().slice(0, 4)
-  const destacados = getFeatured().slice(0, 4)
+  const { products, loading, error } = useCatalogData()
   const historyIds = useWishlistStore((s) => s.history)
-  const recentProducts = historyIds
-    .map((id) => products.find((p) => p.id === id))
-    .filter(Boolean)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
 
+  const nuevos = getNew(products).slice(0, 4)
+  const destacados = getFeatured(products).slice(0, 4)
+  const recentProducts = historyIds
+    .map((id) => products.find((p) => p.id === id))
+    .filter(Boolean)
+
   const onSubscribe = (e) => {
     e.preventDefault()
-    if (email) setSubscribed(true) // mock: sin backend
+    if (email) setSubscribed(true)
   }
 
   return (
@@ -103,7 +119,15 @@ export default function Home() {
       {/* ---------- NUEVOS INGRESOS ---------- */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <SectionHeader title="Nuevos ingresos" to="/tienda?orden=nuevos" />
-        <ProductGrid products={nuevos} />
+        {error ? (
+          <p className="text-sm text-gray">
+            No pudimos cargar el catálogo, intentá de nuevo.
+          </p>
+        ) : loading ? (
+          <GridSkeleton count={4} />
+        ) : (
+          <ProductGrid products={nuevos} />
+        )}
       </section>
 
       {/* ---------- BANNER MANIFIESTO ---------- */}
@@ -127,11 +151,19 @@ export default function Home() {
       {/* ---------- DESTACADOS ---------- */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <SectionHeader title="Destacados" to="/tienda" />
-        <ProductGrid products={destacados} />
+        {error ? (
+          <p className="text-sm text-gray">
+            No pudimos cargar el catálogo, intentá de nuevo.
+          </p>
+        ) : loading ? (
+          <GridSkeleton count={4} />
+        ) : (
+          <ProductGrid products={destacados} />
+        )}
       </section>
 
       {/* ---------- VISTOS RECIENTEMENTE ---------- */}
-      {recentProducts.length > 0 && (
+      {!loading && recentProducts.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <SectionHeader title="Vistos recientemente" />
           <ProductGrid products={recentProducts} />

@@ -16,6 +16,10 @@ export const useUiStore = create((set) => ({
   openFilters: () => set({ filtersOpen: true }),
   closeFilters: () => set({ filtersOpen: false }),
 
+  authModalOpen: false,
+  openAuthModal: () => set({ authModalOpen: true }),
+  closeAuthModal: () => set({ authModalOpen: false }),
+
   // --- Toasts ---
   toasts: [],
   addToast: (message) => {
