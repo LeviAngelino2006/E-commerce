@@ -3,8 +3,8 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 
 import Navbar from './components/Navbar.jsx'
-import DemoBanner from './components/DemoBanner.jsx'
-import DemoPanel from './components/DemoPanel.jsx'
+// import DemoBanner from './components/DemoBanner.jsx'  // RE-SKIN: descomentar para mostrar el banner de demo
+// import DemoPanel from './components/DemoPanel.jsx'    // RE-SKIN: descomentar para mostrar el panel "Sobre este demo"
 import Footer from './components/Footer.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import AuthModal from './components/AuthModal.jsx'
@@ -41,15 +41,14 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
-      {/* Banner + Navbar en un wrapper sticky único para que ambos queden fijos juntos */}
       <div className="sticky top-0 z-40">
-        <DemoBanner />
+        {/* <DemoBanner /> */}{/* RE-SKIN: descomentar para mostrar el banner de demo */}
         <Navbar />
       </div>
       <CartDrawer />
       <AuthModal />
       <ToastStack />
-      <DemoPanel />
+      {/* <DemoPanel /> */}{/* RE-SKIN: descomentar para mostrar el panel "Sobre este demo" */}
 
       <div className="flex-1">
         {/* key por pathname -> transición entre páginas */}

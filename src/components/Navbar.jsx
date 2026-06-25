@@ -83,7 +83,7 @@ export default function Navbar() {
         </div>
 
         {/* Acciones: usuario, favoritos, carrito */}
-        <div className="flex flex-1 items-center justify-end gap-1 md:flex-none">
+        <div className="flex flex-1 items-center justify-end gap-1 md:ml-2 md:flex-none md:border-l md:border-line md:pl-6">
           {/* Sesión */}
           {loggedIn ? (
             <div ref={userMenuRef} className="relative" onBlur={handleUserBtnBlur}>
