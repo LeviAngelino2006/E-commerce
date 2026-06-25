@@ -183,6 +183,7 @@ export default function Navbar() {
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
               className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-bg p-6 md:hidden"
+              style={{ backgroundColor: 'var(--color-bg)' }}
             >
               <div className="mb-8 flex items-center justify-between">
                 <Logo />
