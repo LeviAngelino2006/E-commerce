@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Logo from './Logo.jsx'
@@ -46,6 +47,7 @@ export default function Navbar() {
   }
 
   return (
+    <>
     <header className="border-b border-line bg-bg/80 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Mobile: hamburguesa */}
@@ -165,8 +167,9 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
+    </header>
 
-      {/* Mobile drawer */}
+    {createPortal(
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -175,14 +178,14 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-40 bg-ink/40 md:hidden"
+              className="fixed inset-0 z-40 bg-ink/40"
             />
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
-              className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-bg p-6 md:hidden"
+              className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col p-6"
               style={{ backgroundColor: 'var(--color-bg)' }}
             >
               <div className="mb-8 flex items-center justify-between">
@@ -256,7 +259,9 @@ export default function Navbar() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
-    </header>
+      </AnimatePresence>,
+      document.body
+    )}
+    </>
   )
 }
