@@ -153,7 +153,7 @@ export default function Catalog() {
           </aside>
 
           {/* Contenido */}
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             {/* Barra de controles */}
             <div className="mb-6 flex items-center justify-between gap-4">
               <button
