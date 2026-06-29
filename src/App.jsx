@@ -20,11 +20,18 @@ import Favorites from './pages/Favorites.jsx'
 import Orders from './pages/Orders.jsx'
 import NotFound from './pages/NotFound.jsx'
 
+import AdminRoute from './components/admin/AdminRoute.jsx'
+import AdminLayout from './components/admin/AdminLayout.jsx'
+import AdminDashboard from './pages/admin/Dashboard.jsx'
+import AdminProducts from './pages/admin/Products.jsx'
+import AdminOrders from './pages/admin/AdminOrders.jsx'
+
 import { useAuthStore } from './store/authStore.js'
 import api from './lib/api.js'
 
 export default function App() {
   const location = useLocation()
+  const isAdminPath = location.pathname.startsWith('/admin')
   const token = useAuthStore((s) => s.token)
   const logout = useAuthStore((s) => s.logout)
 
@@ -37,6 +44,26 @@ export default function App() {
   // Solo al montar la app
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Admin paths use their own layout (no Navbar/Footer/CartDrawer)
+  if (isAdminPath) {
+    return (
+      <>
+        <ScrollToTop />
+        <ToastStack />
+        <Routes>
+          <Route path="/admin" element={<AdminRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="productos" element={<AdminProducts />} />
+              <Route path="pedidos" element={<AdminOrders />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
