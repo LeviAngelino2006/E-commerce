@@ -1,26 +1,10 @@
 import { Link } from 'react-router-dom'
 import { brand } from '../config/brand.js'
-import { TruckIcon, RefreshIcon, ShieldIcon } from './icons.jsx'
-
-const TRUST_ICONS = { truck: TruckIcon, refresh: RefreshIcon, shield: ShieldIcon }
 
 export default function Footer() {
   return (
     <footer className="mt-24 border-t border-line">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        {/* Trust badges */}
-        <div className="mb-12 flex flex-col items-center gap-6 border-b border-line pb-12 sm:flex-row sm:justify-center sm:gap-16">
-          {brand.trustBadges.map((badge) => {
-            const Icon = TRUST_ICONS[badge.icon]
-            return (
-              <div key={badge.text} className="flex items-center gap-3">
-                {Icon && <Icon width={20} height={20} className="shrink-0 text-gray" />}
-                <span className="text-sm text-ink">{badge.text}</span>
-              </div>
-            )
-          })}
-        </div>
-
         <div className="grid gap-10 md:grid-cols-4">
           {/* Marca */}
           <div className="md:col-span-1">

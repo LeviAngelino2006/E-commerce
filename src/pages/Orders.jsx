@@ -5,7 +5,7 @@ import Seo from '../components/Seo.jsx'
 import Button from '../components/ui/Button.jsx'
 import { useAuthStore, isAuthenticated } from '../store/authStore.js'
 import { useUiStore } from '../store/uiStore.js'
-import { formatPrice } from '../config/brand.js'
+import { formatPrice, brand } from '../config/brand.js'
 import api from '../lib/api.js'
 
 const STATUS_LABELS = {
@@ -74,7 +74,7 @@ export default function Orders() {
 
   return (
     <PageTransition>
-      <Seo title="Mis pedidos" description="Historial de compras en VÉRTICE." />
+      <Seo title="Mis pedidos" description={`Historial de compras en ${brand.name}.`} />
 
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="mb-8 text-3xl font-bold tracking-tight">Mis pedidos</h1>

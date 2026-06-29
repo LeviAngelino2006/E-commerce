@@ -12,11 +12,11 @@ const __dir = dirname(fileURLToPath(import.meta.url))
 const OUT = resolve(__dir, '..', 'public', 'og-image.png')
 
 const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
-  <!-- fondo oscuro para máximo contraste -->
-  <rect width="1200" height="630" fill="#0A0A0A"/>
+  <!-- fondo cálido -->
+  <rect width="1200" height="630" fill="#161514"/>
 
   <!-- acento de línea (color de marca) -->
-  <rect x="510" y="335" width="180" height="2" fill="#2563EB" opacity="0.7"/>
+  <rect x="510" y="335" width="180" height="2" fill="#C24E2C" opacity="0.7"/>
 
   <!-- wordmark principal -->
   <text
@@ -24,10 +24,10 @@ const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http:/
     font-family="Arial, Helvetica, sans-serif"
     font-size="108"
     font-weight="700"
-    fill="#FAFAFA"
+    fill="#F4F3F0"
     text-anchor="middle"
     letter-spacing="18"
-  >VÉRTICE</text>
+  >MANTO</text>
 
   <!-- tagline -->
   <text
@@ -35,11 +35,11 @@ const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http:/
     font-family="Arial, Helvetica, sans-serif"
     font-size="26"
     font-weight="400"
-    fill="#FAFAFA"
+    fill="#F4F3F0"
     text-anchor="middle"
     letter-spacing="6"
     opacity="0.55"
-  >Esenciales que duran.</text>
+  >Lo esencial, bien hecho.</text>
 </svg>`
 
 const resvg = new Resvg(svg, {

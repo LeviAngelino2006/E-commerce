@@ -17,28 +17,28 @@ export const brand = {
   demoBanner: 'Demo — pagos simulados, no se procesan transacciones reales.',
 
   // --- Identidad ---
-  name: 'VÉRTICE',
+  name: 'MANTO',
   // Logo: por simplicidad usamos un wordmark tipográfico (ver componente Logo).
   // Para usar un logo en imagen, reemplazá el componente src/components/Logo.jsx
-  tagline: 'Esenciales que duran.',
+  tagline: 'Lo esencial, bien hecho.',
   manifesto:
-    'Diseñamos prendas que sobreviven a las temporadas. Materiales nobles, cortes precisos y cero ruido. Menos, pero mejor.',
+    'Hacemos ropa para tu día real: el que arranca temprano y no para. Cómoda sin ser descuidada, simple sin ser aburrida. Lo que te ponés sin pensarlo dos veces.',
 
   // --- SEO / metadatos ---
   seo: {
-    titleSuffix: 'VÉRTICE',
+    titleSuffix: 'MANTO',
     defaultDescription:
-      'VÉRTICE — indumentaria urbana premium. Esenciales que duran.',
+      'MANTO — Indumentaria urbana y athleisure',
   },
 
   // --- Paleta (alto contraste, minimalista) ---
   // Estos valores son la referencia; los tokens de Tailwind están en index.css.
   colors: {
-    bg: '#FAFAFA', // off-white
-    ink: '#0A0A0A', // negro
-    gray: '#6B6B6B', // gris neutro
-    line: '#E5E5E5', // bordes / líneas
-    accent: '#2563EB', // acento sobrio (usar con moderación)
+    bg: '#F4F3F0', // off-white cálido
+    ink: '#161514', // negro cálido
+    gray: '#707070', // gris neutro
+    line: '#E4E3DF', // bordes / líneas
+    accent: '#C24E2C', // terracota
   },
 
   // --- Tipografía ---
@@ -62,7 +62,7 @@ export const brand = {
     instagram: 'https://instagram.com',
     tiktok: 'https://tiktok.com',
   },
-  contactEmail: 'hola@vertice.demo',
+  contactEmail: 'hola@manto.demo',
 
   // --- Envíos / textos comerciales reutilizables ---
   shipping: {
@@ -73,9 +73,9 @@ export const brand = {
   // --- Trust badges (footer) ---
   // RE-SKIN: adaptá textos para la marca del cliente.
   trustBadges: [
-    { icon: 'truck', text: 'Envíos a todo el país' },
-    { icon: 'refresh', text: 'Cambios sin cargo' },
-    { icon: 'shield', text: 'Compra protegida' },
+    { title: 'Despacho en 24 h', text: 'Llegamos a todo el país en 2 a 5 días hábiles.' },
+    { title: 'Cambios sin vueltas', text: 'Tenés 30 días para cambiar de idea.' },
+    { title: 'Compra protegida', text: 'Pago cifrado y seguimiento de tu pedido de punta a punta.' },
   ],
 
   // --- Roadmap real (panel de demo) ---

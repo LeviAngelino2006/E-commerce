@@ -70,7 +70,7 @@ export default function Home() {
       <section className="relative h-[88vh] min-h-[520px] w-full overflow-hidden">
         <img
           src={HERO_IMG}
-          alt="Campaña editorial VÉRTICE"
+          alt={`Campaña editorial ${brand.name}`}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" />
@@ -176,7 +176,7 @@ export default function Home() {
           <div className="hidden h-full md:block">
             <ProductImage
               src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80"
-              alt="Sumate a la comunidad VÉRTICE"
+              alt={`Sumate a la comunidad ${brand.name}`}
               ratio="aspect-[4/3] h-full"
             />
           </div>

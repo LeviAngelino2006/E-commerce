@@ -16,6 +16,7 @@ import {
   getPriceBounds,
 } from '../lib/catalog.js'
 import { useUiStore } from '../store/uiStore.js'
+import { brand } from '../config/brand.js'
 
 const SORTS = [
   { value: 'nuevos', label: 'Novedades' },
@@ -109,7 +110,7 @@ export default function Catalog() {
     <PageTransition>
       <Seo
         title="Tienda"
-        description="Explorá toda la colección VÉRTICE: remeras, buzos, camperas, pantalones y accesorios."
+        description={`Explorá toda la colección ${brand.name}: remeras, buzos, camperas, pantalones y accesorios.`}
       />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
