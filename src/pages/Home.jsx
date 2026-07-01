@@ -11,9 +11,7 @@ import { useCatalogData, getFeatured, getNew } from '../lib/catalog.js'
 import { brand } from '../config/brand.js'
 import { useWishlistStore } from '../store/wishlistStore.js'
 
-// RE-SKIN: imagen editorial del hero. Reemplazar por foto de campaña del cliente.
-const HERO_IMG =
-  'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80'
+const HERO_IMG = '/img/products/hero-home-1.png'
 
 function SectionHeader({ title, to, linkLabel = 'Ver todo' }) {
   return (
@@ -175,7 +173,7 @@ export default function Home() {
         <div className="grid items-center gap-8 border border-line md:grid-cols-2">
           <div className="hidden h-full md:block">
             <ProductImage
-              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80"
+              src="/img/products/newsletter-circulo-1.png"
               alt={`Sumate a la comunidad ${brand.name}`}
               ratio="aspect-[4/3] h-full"
             />
