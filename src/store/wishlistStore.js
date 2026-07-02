@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useAuthStore } from './authStore.js'
+import { useUiStore } from './uiStore.js'
 import api from '../lib/api.js'
 
 const GUEST_KEY = 'manto-wishlist-guest'
@@ -38,16 +39,22 @@ export const useWishlistStore = create(
       toggleFavorite: async (productId) => {
         const { token } = useAuthStore.getState()
         if (token) {
-          const isFav = get().items.includes(productId)
+          const prev = get().items
+          const isFav = prev.includes(productId)
+          // Optimistic update
+          set({ items: isFav ? prev.filter((id) => id !== productId) : [...prev, productId] })
           try {
             if (isFav) {
-              await api.delete(`/api/favorites/${productId}`)
-              set((s) => ({ items: s.items.filter((id) => id !== productId) }))
+              const { data } = await api.delete(`/api/favorites/${productId}`)
+              set({ items: normalizeIds(data) })
             } else {
-              await api.post(`/api/favorites/${productId}`)
-              set((s) => ({ items: [...s.items, productId] }))
+              const { data } = await api.post(`/api/favorites/${productId}`)
+              set({ items: normalizeIds(data) })
             }
-          } catch { /* silently fail */ }
+          } catch {
+            set({ items: prev })
+            useUiStore.getState().addToast('No se pudo actualizar los favoritos.')
+          }
         } else {
           set((s) => {
             const newItems = s.items.includes(productId)
