@@ -65,7 +65,7 @@ export default function Home() {
       <Seo />
 
       {/* ---------- HERO ---------- */}
-      <section className="relative h-[88vh] min-h-[520px] w-full overflow-hidden">
+      <section className="relative h-[88vh] min-h-[110vh] w-full overflow-hidden">
         <img
           src={HERO_IMG}
           alt={`Campaña editorial ${brand.name}`}
@@ -91,7 +91,7 @@ export default function Home() {
               {brand.manifesto}
             </p>
             <div className="mt-8">
-              <Button to="/tienda" size="lg" variant="outline" className="border-bg text-bg hover:bg-bg hover:text-ink">
+              <Button to="/tienda" size="lg" variant="outline" className="bg-white text-ink border-white hover:bg-white/90">
                 Ver colección
               </Button>
             </div>

@@ -27,6 +27,7 @@ import AdminProducts from './pages/admin/Products.jsx'
 import AdminOrders from './pages/admin/AdminOrders.jsx'
 
 import { useAuthStore } from './store/authStore.js'
+import { useCartStore } from './store/cartStore.js'
 import api from './lib/api.js'
 
 export default function App() {
@@ -34,13 +35,19 @@ export default function App() {
   const isAdminPath = location.pathname.startsWith('/admin')
   const token = useAuthStore((s) => s.token)
   const logout = useAuthStore((s) => s.logout)
+  const loadCart = useCartStore((s) => s.loadCart)
 
-  // Valida que el token guardado siga siendo vigente
+  // Valida el token y carga el carrito al montar la app
   useEffect(() => {
-    if (!token) return
-    api.get('/api/auth/me').catch((err) => {
-      if (err.response?.status === 401) logout()
-    })
+    if (token) {
+      api.get('/api/auth/me')
+        .then(() => loadCart())
+        .catch((err) => {
+          if (err.response?.status === 401) logout()
+        })
+    } else {
+      loadCart()
+    }
   // Solo al montar la app
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { CloseIcon } from './icons.jsx'
 import { useUiStore } from '../store/uiStore.js'
 import { useAuthStore } from '../store/authStore.js'
+import { useCartStore } from '../store/cartStore.js'
 import api from '../lib/api.js'
 
 // Carga el SDK de Google Sign-In una sola vez
@@ -30,6 +31,7 @@ export default function AuthModal() {
   const close = useUiStore((s) => s.closeAuthModal)
   const setSession = useAuthStore((s) => s.setSession)
   const addToast = useUiStore((s) => s.addToast)
+  const mergeGuestCartAndLoad = useCartStore((s) => s.mergeGuestCartAndLoad)
 
   const [mode, setMode] = useState('login') // 'login' | 'registro'
   const [nombre, setNombre] = useState('')
@@ -107,6 +109,7 @@ export default function AuthModal() {
     try {
       const { data } = await api.post('/api/auth/google', { idToken: credential })
       setSession({ user: data.user, token: data.token })
+      mergeGuestCartAndLoad()
       addToast(`¡Bienvenido, ${data.user.nombre}!`)
       close()
     } catch (err) {
@@ -128,6 +131,7 @@ export default function AuthModal() {
       const payload = mode === 'login' ? { email, password } : { nombre, email, password }
       const { data } = await api.post(endpoint, payload)
       setSession({ user: data.user, token: data.token })
+      mergeGuestCartAndLoad()
       addToast(`¡Bienvenido, ${data.user.nombre}!`)
       close()
     } catch (err) {
