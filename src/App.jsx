@@ -28,6 +28,7 @@ import AdminOrders from './pages/admin/AdminOrders.jsx'
 
 import { useAuthStore } from './store/authStore.js'
 import { useCartStore } from './store/cartStore.js'
+import { useWishlistStore } from './store/wishlistStore.js'
 import api from './lib/api.js'
 
 export default function App() {
@@ -36,17 +37,19 @@ export default function App() {
   const token = useAuthStore((s) => s.token)
   const logout = useAuthStore((s) => s.logout)
   const loadCart = useCartStore((s) => s.loadCart)
+  const loadFavorites = useWishlistStore((s) => s.loadFavorites)
 
-  // Valida el token y carga el carrito al montar la app
+  // Valida el token y carga carrito + favoritos al montar la app
   useEffect(() => {
     if (token) {
       api.get('/api/auth/me')
-        .then(() => loadCart())
+        .then(() => { loadCart(); loadFavorites() })
         .catch((err) => {
           if (err.response?.status === 401) logout()
         })
     } else {
       loadCart()
+      loadFavorites()
     }
   // Solo al montar la app
   // eslint-disable-next-line react-hooks/exhaustive-deps

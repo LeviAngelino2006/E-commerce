@@ -4,6 +4,7 @@ import { CloseIcon } from './icons.jsx'
 import { useUiStore } from '../store/uiStore.js'
 import { useAuthStore } from '../store/authStore.js'
 import { useCartStore } from '../store/cartStore.js'
+import { useWishlistStore } from '../store/wishlistStore.js'
 import api from '../lib/api.js'
 
 // Carga el SDK de Google Sign-In una sola vez
@@ -32,6 +33,7 @@ export default function AuthModal() {
   const setSession = useAuthStore((s) => s.setSession)
   const addToast = useUiStore((s) => s.addToast)
   const mergeGuestCartAndLoad = useCartStore((s) => s.mergeGuestCartAndLoad)
+  const mergeGuestFavoritesAndLoad = useWishlistStore((s) => s.mergeGuestFavoritesAndLoad)
 
   const [mode, setMode] = useState('login') // 'login' | 'registro'
   const [nombre, setNombre] = useState('')
@@ -110,6 +112,7 @@ export default function AuthModal() {
       const { data } = await api.post('/api/auth/google', { idToken: credential })
       setSession({ user: data.user, token: data.token })
       mergeGuestCartAndLoad()
+      mergeGuestFavoritesAndLoad()
       addToast(`¡Bienvenido, ${data.user.nombre}!`)
       close()
     } catch (err) {
@@ -132,6 +135,7 @@ export default function AuthModal() {
       const { data } = await api.post(endpoint, payload)
       setSession({ user: data.user, token: data.token })
       mergeGuestCartAndLoad()
+      mergeGuestFavoritesAndLoad()
       addToast(`¡Bienvenido, ${data.user.nombre}!`)
       close()
     } catch (err) {

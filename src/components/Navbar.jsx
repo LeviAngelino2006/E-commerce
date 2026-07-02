@@ -28,6 +28,7 @@ export default function Navbar() {
   const itemCount = useCartStore((s) => s.items.reduce((n, i) => n + i.qty, 0))
   const onCartLogout = useCartStore((s) => s.onLogout)
   const favCount = useWishlistStore((s) => s.items.length)
+  const onFavoritesLogout = useWishlistStore((s) => s.onLogout)
 
   const loggedIn = useAuthStore(isAuthenticated)
   const user = useAuthStore((s) => s.user)
@@ -38,6 +39,7 @@ export default function Navbar() {
     setUserMenuOpen(false)
     logout()
     onCartLogout()
+    onFavoritesLogout()
     addToast('Hasta pronto')
   }
 
