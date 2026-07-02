@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { useAuthStore } from './authStore.js'
+import { useUiStore } from './uiStore.js'
 import api from '../lib/api.js'
 
 const GUEST_KEY = 'manto-cart-guest'
@@ -46,16 +47,40 @@ export const useCartStore = create((set, get) => ({
   addItem: async (product, { talle, color, qty = 1 }) => {
     const { token } = useAuthStore.getState()
     if (token) {
-      set({ syncing: true })
+      const prev = get().items
+      const existing = prev.find(
+        (i) => i.productId === product.id && i.talle === talle && i.color === color
+      )
+      const optimistic = existing
+        ? prev.map((i) =>
+            i.productId === product.id && i.talle === talle && i.color === color
+              ? { ...i, qty: i.qty + qty }
+              : i
+          )
+        : [
+            ...prev,
+            {
+              lineId: guestLineId(product.id, talle, color),
+              productId: product.id,
+              nombre: product.nombre,
+              precio: product.precio,
+              imagen: product.imagenes?.[0] ?? '',
+              talle,
+              color,
+              qty,
+            },
+          ]
+      set({ items: optimistic, syncing: true })
       try {
-        const existing = get().items.find(
-          (i) => i.productId === product.id && i.talle === talle && i.color === color
-        )
         const cantidad = existing ? existing.qty + qty : qty
         await api.put('/api/cart', { productId: product.id, talle, color, cantidad })
         await get().loadCart()
-      } catch { /* silently fail */ }
-      finally { set({ syncing: false }) }
+      } catch {
+        set({ items: prev })
+        useUiStore.getState().addToast('No se pudo agregar el producto al carrito.')
+      } finally {
+        set({ syncing: false })
+      }
     } else {
       const id = guestLineId(product.id, talle, color)
       set((s) => {
@@ -84,12 +109,16 @@ export const useCartStore = create((set, get) => ({
   removeItem: async (lineId) => {
     const { token } = useAuthStore.getState()
     if (token) {
-      set({ syncing: true })
+      const prev = get().items
+      set({ items: prev.filter((i) => i.lineId !== lineId), syncing: true })
       try {
         await api.delete(`/api/cart/${lineId}`)
-        set((s) => ({ items: s.items.filter((i) => i.lineId !== lineId) }))
-      } catch { /* silently fail */ }
-      finally { set({ syncing: false }) }
+      } catch {
+        set({ items: prev })
+        useUiStore.getState().addToast('No se pudo eliminar el producto del carrito.')
+      } finally {
+        set({ syncing: false })
+      }
     } else {
       set((s) => {
         const newItems = s.items.filter((i) => i.lineId !== lineId)
@@ -102,26 +131,30 @@ export const useCartStore = create((set, get) => ({
   updateQty: async (lineId, qty) => {
     const { token } = useAuthStore.getState()
     if (token) {
-      set({ syncing: true })
+      const prev = get().items
+      const item = prev.find((i) => i.lineId === lineId)
+      if (!item) return
+      const optimistic = qty <= 0
+        ? prev.filter((i) => i.lineId !== lineId)
+        : prev.map((i) => i.lineId === lineId ? { ...i, qty } : i)
+      set({ items: optimistic, syncing: true })
       try {
         if (qty <= 0) {
           await api.delete(`/api/cart/${lineId}`)
-          set((s) => ({ items: s.items.filter((i) => i.lineId !== lineId) }))
         } else {
-          const item = get().items.find((i) => i.lineId === lineId)
-          if (!item) return
           await api.put('/api/cart', {
             productId: item.productId,
             talle: item.talle,
             color: item.color,
             cantidad: qty,
           })
-          set((s) => ({
-            items: s.items.map((i) => i.lineId === lineId ? { ...i, qty } : i),
-          }))
         }
-      } catch { /* silently fail */ }
-      finally { set({ syncing: false }) }
+      } catch {
+        set({ items: prev })
+        useUiStore.getState().addToast('No se pudo actualizar el carrito.')
+      } finally {
+        set({ syncing: false })
+      }
     } else {
       set((s) => {
         const newItems = s.items
